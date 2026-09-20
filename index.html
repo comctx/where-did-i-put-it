@@ -50,6 +50,8 @@ button{font:inherit;cursor:pointer}
 .msg{padding:11px;border-radius:12px;background:#ecfdf3;color:#067647;font-weight:700;margin-top:10px}
 .note{font-size:12px;color:var(--muted);margin-top:8px}
 .brand-footer{text-align:center;color:#475467;font-size:12px;font-weight:600;margin:12px 0 4px;letter-spacing:.4px}
+.utility{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.status{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.4}
 </style>
 </head>
 <body>
@@ -75,8 +77,14 @@ button{font:inherit;cursor:pointer}
   <button class="homebtn" onclick="showFind()">🔎 Find Item
     <small>Search your saved items and locations.</small>
   </button>
+  <button class="homebtn" onclick="showAllItems()">📋 All Items
+    <small>See everything you have saved in one list.</small>
+  </button>
   <button class="homebtn" onclick="showMove()">📍 I Moved It
     <small>Update an item's location quickly.</small>
+  </button>
+  <button class="homebtn" onclick="showBackup()">💾 Backup / Restore
+    <small>Save a backup file or restore your items later.</small>
   </button>
 
   <div class="card" style="text-align:center">
@@ -119,6 +127,27 @@ button{font:inherit;cursor:pointer}
     </div>
   </div>
   <div id="results"></div>
+</section>
+
+<section id="allItemsView" class="hidden">
+  <div class="topbar"><button class="back" onclick="goHome()">← Back</button><h2>All Items</h2></div>
+  <div id="allItemsResults"></div>
+</section>
+
+<section id="backupView" class="hidden">
+  <div class="topbar"><button class="back" onclick="goHome()">← Back</button><h2>Backup / Restore</h2></div>
+  <div class="card">
+    <h3 style="margin-top:0">Backup your saved items</h3>
+    <p class="status">Download a backup file that includes your item names, locations, notes, and saved photos.</p>
+    <button class="btn primary" type="button" onclick="downloadBackup()">Download Backup</button>
+  </div>
+  <div class="card">
+    <h3 style="margin-top:0">Restore from a backup</h3>
+    <p class="status">Choose a backup file made by this app. Restoring will replace the items currently saved in this browser.</p>
+    <input id="restoreFile" type="file" accept="application/json,.json" style="margin-top:8px">
+    <button class="btn secondary" type="button" onclick="restoreBackup()">Restore Backup</button>
+    <div id="restoreMessage" class="msg hidden">Backup restored!</div>
+  </div>
 </section>
 
 <section id="moveView" class="hidden">
@@ -185,7 +214,7 @@ function updateCount(){
   document.getElementById("itemCount").textContent=n+" item"+(n===1?"":"s")+" saved";
 }
 function showView(id){
-  ["homeView","addView","findView","moveView","editView"].forEach(v=>document.getElementById(v).classList.add("hidden"));
+  ["homeView","addView","findView","allItemsView","backupView","moveView","editView"].forEach(v=>document.getElementById(v).classList.add("hidden"));
   document.getElementById(id).classList.remove("hidden");
   window.scrollTo(0,0);
 }
@@ -221,17 +250,8 @@ function showMove(){
 function escapeHtml(s){
   return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
 }
-function renderResults(){
-  const q=document.getElementById("findSearch").value.trim().toLowerCase();
-  const all=getItems();
-  const items= q ? all.filter(i=>[i.name,i.location,i.spot,i.notes].join(" ").toLowerCase().includes(q)) : all;
-  const box=document.getElementById("results");
-  if(!items.length){
-    box.innerHTML='<div class="card empty">'+(all.length?"No matching items found.":"You have not saved any items yet.")+'</div>';
-    return;
-  }
-  items.sort((a,b)=>b.updated-a.updated);
-  box.innerHTML=items.map(i=>`
+function itemCardHtml(i){
+  return `
     <div class="item">
       <div class="itemrow">
         ${i.photo?`<img class="thumb" src="${i.photo}" alt="">`:`<div class="thumb" style="display:grid;place-items:center;font-size:34px">📦</div>`}
@@ -247,7 +267,87 @@ function renderResults(){
         <button class="btn secondary" onclick="quickMove('${i.id}')">I Moved It</button>
         <button class="btn danger" onclick="deleteItem('${i.id}')">Delete</button>
       </div>
-    </div>`).join("");
+    </div>`;
+}
+function showAllItems(){
+  showView("allItemsView");
+  renderAllItems();
+}
+function renderAllItems(){
+  const box=document.getElementById("allItemsResults");
+  const items=getItems().sort((a,b)=>(a.name||"").localeCompare(b.name||""));
+  if(!items.length){
+    box.innerHTML='<div class="card empty">You have not saved any items yet.</div>';
+    return;
+  }
+  box.innerHTML=items.map(itemCardHtml).join("");
+}
+function showBackup(){
+  document.getElementById("restoreFile").value="";
+  document.getElementById("restoreMessage").classList.add("hidden");
+  showView("backupView");
+}
+function downloadBackup(){
+  const data={
+    app:"Where Did I Put It?",
+    version:1,
+    exportedAt:new Date().toISOString(),
+    items:getItems()
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  const d=new Date();
+  const stamp=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  a.href=url;
+  a.download="where-did-i-put-it-backup-"+stamp+".json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+async function restoreBackup(){
+  const input=document.getElementById("restoreFile");
+  const file=input.files[0];
+  if(!file){alert("Choose a backup file first.");return}
+  let data;
+  try{
+    data=JSON.parse(await file.text());
+  }catch(e){
+    alert("That file is not a valid backup.");
+    return;
+  }
+  const items=Array.isArray(data)?data:data&&Array.isArray(data.items)?data.items:null;
+  if(!items){alert("That file is not a Where Did I Put It? backup.");return}
+  const valid=items.every(i=>i&&typeof i==="object"&&typeof i.name==="string"&&typeof i.location==="string");
+  if(!valid){alert("That backup file is damaged or incomplete.");return}
+  if(!confirm("Restore this backup? This will replace the items currently saved in this browser."))return;
+  const restored=items.map((i,n)=>({
+    id:String(i.id||("restored_"+Date.now()+"_"+n)),
+    name:String(i.name||""),
+    location:String(i.location||""),
+    spot:String(i.spot||""),
+    notes:String(i.notes||""),
+    photo:typeof i.photo==="string"?i.photo:"",
+    updated:Number(i.updated)||Date.now()
+  }));
+  try{setItems(restored)}
+  catch(e){alert("There is not enough browser storage to restore this backup.");return}
+  const m=document.getElementById("restoreMessage");
+  m.textContent=restored.length+" item"+(restored.length===1?"":"s")+" restored!";
+  m.classList.remove("hidden");
+}
+function renderResults(){
+  const q=document.getElementById("findSearch").value.trim().toLowerCase();
+  const all=getItems();
+  const items= q ? all.filter(i=>[i.name,i.location,i.spot,i.notes].join(" ").toLowerCase().includes(q)) : all;
+  const box=document.getElementById("results");
+  if(!items.length){
+    box.innerHTML='<div class="card empty">'+(all.length?"No matching items found.":"You have not saved any items yet.")+'</div>';
+    return;
+  }
+  items.sort((a,b)=>b.updated-a.updated);
+  box.innerHTML=items.map(itemCardHtml).join("");
 }
 function editItem(id){
   const item=getItems().find(i=>i.id===id);
@@ -316,7 +416,8 @@ function quickMove(id){
 function deleteItem(id){
   if(!confirm("Delete this saved item?"))return;
   setItems(getItems().filter(i=>i.id!==id));
-  renderResults();
+  if(!document.getElementById("allItemsView").classList.contains("hidden"))renderAllItems();
+  else renderResults();
 }
 function moveItem(){
   const id=document.getElementById("moveItem").value;
