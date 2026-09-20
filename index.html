@@ -1,70 +1,311 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2563eb">
 <title>Where Did I Put It?</title>
 <style>
-  :root{--bg:#f5f7fb;--card:#fff;--text:#172033;--muted:#667085;--accent:#2563eb;--accent2:#eef4ff;--border:#dbe2ea;--shadow:0 8px 24px rgba(15,23,42,.08)}
-  *{box-sizing:border-box}
-  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
-  .phone{max-width:480px;margin:0 auto;min-height:100vh;padding:calc(18px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom))}
-  .title{font-size:32px;line-height:1.08;font-weight:800;margin:12px 0 8px;text-align:center}
-  .subtitle{color:var(--muted);text-align:center;font-size:16px;margin-bottom:24px}
-  .hero{background:linear-gradient(145deg,#fff,#f9fbff);border:1px solid var(--border);border-radius:24px;box-shadow:var(--shadow);padding:24px 18px;text-align:center;margin-bottom:20px}
-  .icon{font-size:54px;margin-bottom:8px}
-  .search{display:flex;gap:10px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:10px;box-shadow:var(--shadow);margin-bottom:18px}
-  .search input{flex:1;border:none;outline:none;font-size:17px;padding:10px;background:transparent;min-width:0}
-  .search button{border:none;background:var(--accent);color:white;border-radius:12px;padding:0 16px;font-size:16px;font-weight:700}
-  .grid{display:grid;grid-template-columns:1fr;gap:14px}
-  .bigbtn{width:100%;border:none;border-radius:18px;padding:18px;font-size:20px;font-weight:800;text-align:left;background:var(--card);color:var(--text);box-shadow:var(--shadow);border:1px solid var(--border)}
-  .bigbtn span{display:block;font-size:14px;font-weight:500;color:var(--muted);margin-top:5px}
-  .primary{background:var(--accent);color:white;border-color:var(--accent)}
-  .primary span{color:#dbeafe}
-  .footer{text-align:center;color:var(--muted);font-size:13px;margin-top:24px}
-  .panel{display:none;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px;margin-top:18px;box-shadow:var(--shadow)}
-  .panel h2{margin:0 0 12px;font-size:22px}.panel p{margin:0;color:var(--muted)}
-  .back{margin-top:14px;border:none;background:var(--accent2);color:var(--accent);font-weight:700;border-radius:12px;padding:10px 14px}
+:root{
+  --bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#667085;--accent:#2563eb;
+  --accent2:#eef4ff;--border:#dbe2ea;--danger:#b42318;--shadow:0 8px 24px rgba(15,23,42,.08)
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+.app{max-width:520px;margin:auto;min-height:100vh;padding:calc(14px + env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom))}
+h1{font-size:30px;line-height:1.1;text-align:center;margin:10px 0 6px}
+.sub{text-align:center;color:var(--muted);margin:0 0 18px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow);padding:16px;margin-bottom:14px}
+.hero{text-align:center;padding:20px 16px}
+.hero .emoji{font-size:48px}
+.search{display:flex;gap:8px}
+.search input{flex:1;min-width:0}
+input,textarea,select{
+  width:100%;font:inherit;border:1px solid #cfd8e3;border-radius:12px;padding:12px;background:#fff;color:var(--text)
+}
+textarea{min-height:82px;resize:vertical}
+label{display:block;font-weight:700;margin:13px 0 6px}
+button{font:inherit;cursor:pointer}
+.btn{width:100%;border:none;border-radius:14px;padding:14px;font-weight:800;font-size:17px;margin-top:10px}
+.primary{background:var(--accent);color:#fff}
+.secondary{background:var(--accent2);color:var(--accent)}
+.danger{background:#fff0ee;color:var(--danger);border:1px solid #ffd1cc}
+.homebtn{display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--border);border-radius:16px;padding:16px;margin:10px 0;box-shadow:var(--shadow);font-weight:800;font-size:19px}
+.homebtn small{display:block;color:var(--muted);font-weight:500;font-size:14px;margin-top:4px}
+.hidden{display:none!important}
+.topbar{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.back{border:none;background:var(--accent2);color:var(--accent);border-radius:10px;padding:9px 12px;font-weight:800}
+.topbar h2{margin:0;font-size:23px}
+.photoPreview{width:100%;max-height:260px;object-fit:cover;border-radius:14px;margin-top:10px;border:1px solid var(--border)}
+.item{background:#fff;border:1px solid var(--border);border-radius:16px;padding:13px;margin:10px 0}
+.itemrow{display:flex;gap:12px}
+.thumb{width:82px;height:82px;object-fit:cover;border-radius:12px;background:#eef2f7;flex:0 0 auto}
+.item h3{margin:1px 0 5px;font-size:19px}
+.loc{font-weight:800;color:#1d4ed8}
+.meta{color:var(--muted);font-size:13px;margin-top:5px}
+.empty{text-align:center;color:var(--muted);padding:24px 10px}
+.badge{display:inline-block;background:#eef4ff;color:#1d4ed8;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:800;margin-top:6px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.msg{padding:11px;border-radius:12px;background:#ecfdf3;color:#067647;font-weight:700;margin-top:10px}
+.note{font-size:12px;color:var(--muted);margin-top:8px}
 </style>
 </head>
 <body>
-  <main class="phone">
-    <section id="home">
-      <div class="hero">
-        <div class="icon">📦</div>
-        <div class="title">Where Did I Put It?</div>
-        <div class="subtitle">Save where you stored things so you can find them later.</div>
-      </div>
+<div class="app">
 
-      <div class="search">
-        <input id="searchBox" type="search" placeholder="Search for an item…" />
-        <button onclick="openPanel('find')">Find</button>
-      </div>
+<section id="homeView">
+  <div class="card hero">
+    <div class="emoji">📦</div>
+    <h1>Where Did I Put It?</h1>
+    <p class="sub">Save where you stored things so you can find them later.</p>
+  </div>
 
-      <div class="grid">
-        <button class="bigbtn primary" onclick="openPanel('add')">➕ Add Item<span>Take a photo and save where you put it.</span></button>
-        <button class="bigbtn" onclick="openPanel('find')">🔎 Find Item<span>Search your saved items and locations.</span></button>
-        <button class="bigbtn" onclick="openPanel('move')">📍 I Moved It<span>Update an item's location quickly.</span></button>
-      </div>
+  <div class="card">
+    <div class="search">
+      <input id="homeSearch" type="search" placeholder="What are you looking for?">
+      <button class="back" onclick="findFromHome()">Find</button>
+    </div>
+  </div>
 
-      <div class="footer">Simple • Private • Easy to use</div>
-    </section>
+  <button class="homebtn" onclick="showView('addView')">➕ Add Item
+    <small>Take a photo and save where you put it.</small>
+  </button>
+  <button class="homebtn" onclick="showFind()">🔎 Find Item
+    <small>Search your saved items and locations.</small>
+  </button>
+  <button class="homebtn" onclick="showMove()">📍 I Moved It
+    <small>Update an item's location quickly.</small>
+  </button>
 
-    <section id="add" class="panel"><h2>Add Item</h2><p>This will become the screen where you take a photo, name the item, and save its location.</p><button class="back" onclick="goHome()">← Back</button></section>
-    <section id="find" class="panel"><h2>Find Item</h2><p id="findText">This will show matching saved items and exactly where they are stored.</p><button class="back" onclick="goHome()">← Back</button></section>
-    <section id="move" class="panel"><h2>I Moved It</h2><p>This will let you pick an item and save its new location.</p><button class="back" onclick="goHome()">← Back</button></section>
-  </main>
+  <div class="card" style="text-align:center">
+    <strong id="itemCount">0 items saved</strong>
+    <div class="note">Items are stored on this device in this browser.</div>
+  </div>
+</section>
+
+<section id="addView" class="hidden">
+  <div class="topbar"><button class="back" onclick="goHome()">← Back</button><h2>Add Item</h2></div>
+  <div class="card">
+    <label for="itemName">Item name</label>
+    <input id="itemName" placeholder="Example: Christmas lights">
+
+    <label for="itemPhoto">Photo (optional)</label>
+    <input id="itemPhoto" type="file" accept="image/*" capture="environment">
+    <img id="photoPreview" class="photoPreview hidden" alt="Selected item">
+
+    <label for="room">Location</label>
+    <input id="room" placeholder="Example: Garage">
+
+    <label for="spot">Exact spot</label>
+    <input id="spot" placeholder="Example: Top shelf, left side">
+
+    <label for="notes">Notes (optional)</label>
+    <textarea id="notes" placeholder="Box color, quantity, part number, etc."></textarea>
+
+    <button class="btn primary" onclick="saveItem()">Save Item</button>
+    <div id="saveMessage" class="msg hidden">Saved!</div>
+  </div>
+</section>
+
+<section id="findView" class="hidden">
+  <div class="topbar"><button class="back" onclick="goHome()">← Back</button><h2>Find Item</h2></div>
+  <div class="card">
+    <div class="search">
+      <input id="findSearch" type="search" placeholder="Search item, room, spot or notes">
+      <button class="back" onclick="renderResults()">Find</button>
+    </div>
+  </div>
+  <div id="results"></div>
+</section>
+
+<section id="moveView" class="hidden">
+  <div class="topbar"><button class="back" onclick="goHome()">← Back</button><h2>I Moved It</h2></div>
+  <div class="card">
+    <label for="moveItem">Choose item</label>
+    <select id="moveItem"></select>
+
+    <label for="newRoom">New location</label>
+    <input id="newRoom" placeholder="Example: Basement">
+
+    <label for="newSpot">New exact spot</label>
+    <input id="newSpot" placeholder="Example: Shelf 3">
+
+    <button class="btn primary" onclick="moveItem()">Save New Location</button>
+    <div id="moveMessage" class="msg hidden">Location updated!</div>
+  </div>
+</section>
+
+</div>
+
 <script>
-function openPanel(id){
-  document.getElementById('home').style.display='none';
-  ['add','find','move'].forEach(x=>document.getElementById(x).style.display='none');
-  document.getElementById(id).style.display='block';
-  if(id==='find'){
-    const q=document.getElementById('searchBox').value.trim();
-    document.getElementById('findText').textContent=q?'Searching for "'+q+'". This screen will later show matching saved items and their locations.':'This will show matching saved items and exactly where they are stored.';
-  }
+const KEY="whereDidIPutIt_items_v1";
+let pendingPhoto="";
+
+function getItems(){
+  try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){return[]}
 }
-function goHome(){['add','find','move'].forEach(x=>document.getElementById(x).style.display='none');document.getElementById('home').style.display='block'}
+function setItems(items){
+  localStorage.setItem(KEY,JSON.stringify(items));
+  updateCount();
+}
+function updateCount(){
+  const n=getItems().length;
+  document.getElementById("itemCount").textContent=n+" item"+(n===1?"":"s")+" saved";
+}
+function showView(id){
+  ["homeView","addView","findView","moveView"].forEach(v=>document.getElementById(v).classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+  window.scrollTo(0,0);
+}
+function goHome(){
+  showView("homeView");
+  updateCount();
+}
+function findFromHome(){
+  const q=document.getElementById("homeSearch").value;
+  document.getElementById("findSearch").value=q;
+  showFind();
+}
+function showFind(){
+  showView("findView");
+  renderResults();
+}
+function showMove(){
+  const sel=document.getElementById("moveItem");
+  const items=getItems();
+  sel.innerHTML="";
+  if(!items.length){
+    const o=document.createElement("option"); o.textContent="No items saved yet"; o.value="";
+    sel.appendChild(o);
+  }else{
+    items.sort((a,b)=>a.name.localeCompare(b.name)).forEach(item=>{
+      const o=document.createElement("option");
+      o.value=item.id;o.textContent=item.name+" — "+item.location;
+      sel.appendChild(o);
+    });
+  }
+  showView("moveView");
+}
+function escapeHtml(s){
+  return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));
+}
+function renderResults(){
+  const q=document.getElementById("findSearch").value.trim().toLowerCase();
+  const all=getItems();
+  const items= q ? all.filter(i=>[i.name,i.location,i.spot,i.notes].join(" ").toLowerCase().includes(q)) : all;
+  const box=document.getElementById("results");
+  if(!items.length){
+    box.innerHTML='<div class="card empty">'+(all.length?"No matching items found.":"You have not saved any items yet.")+'</div>';
+    return;
+  }
+  items.sort((a,b)=>b.updated-a.updated);
+  box.innerHTML=items.map(i=>`
+    <div class="item">
+      <div class="itemrow">
+        ${i.photo?`<img class="thumb" src="${i.photo}" alt="">`:`<div class="thumb" style="display:grid;place-items:center;font-size:34px">📦</div>`}
+        <div style="min-width:0;flex:1">
+          <h3>${escapeHtml(i.name)}</h3>
+          <div class="loc">📍 ${escapeHtml(i.location)}${i.spot?" — "+escapeHtml(i.spot):""}</div>
+          ${i.notes?`<div class="meta">${escapeHtml(i.notes)}</div>`:""}
+          <span class="badge">Saved ${new Date(i.updated).toLocaleDateString()}</span>
+        </div>
+      </div>
+      <div class="two">
+        <button class="btn secondary" onclick="quickMove('${i.id}')">I Moved It</button>
+        <button class="btn danger" onclick="deleteItem('${i.id}')">Delete</button>
+      </div>
+    </div>`).join("");
+}
+function quickMove(id){
+  showMove();
+  document.getElementById("moveItem").value=id;
+}
+function deleteItem(id){
+  if(!confirm("Delete this saved item?"))return;
+  setItems(getItems().filter(i=>i.id!==id));
+  renderResults();
+}
+function moveItem(){
+  const id=document.getElementById("moveItem").value;
+  if(!id){alert("Save an item first.");return}
+  const location=document.getElementById("newRoom").value.trim();
+  const spot=document.getElementById("newSpot").value.trim();
+  if(!location){alert("Enter the new location.");return}
+  const items=getItems();
+  const item=items.find(i=>i.id===id);
+  if(!item)return;
+  item.location=location;
+  item.spot=spot;
+  item.updated=Date.now();
+  setItems(items);
+  document.getElementById("newRoom").value="";
+  document.getElementById("newSpot").value="";
+  const m=document.getElementById("moveMessage");
+  m.classList.remove("hidden");
+  setTimeout(()=>m.classList.add("hidden"),1800);
+  showMove();
+}
+async function compressPhoto(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onerror=reject;
+    reader.onload=()=>{
+      const img=new Image();
+      img.onload=()=>{
+        const max=700;
+        let w=img.width,h=img.height;
+        if(w>h && w>max){h=Math.round(h*max/w);w=max}
+        else if(h>=w && h>max){w=Math.round(w*max/h);h=max}
+        const c=document.createElement("canvas");c.width=w;c.height=h;
+        c.getContext("2d").drawImage(img,0,0,w,h);
+        resolve(c.toDataURL("image/jpeg",0.72));
+      };
+      img.onerror=reject;
+      img.src=reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+document.getElementById("itemPhoto").addEventListener("change",async e=>{
+  const f=e.target.files[0];
+  if(!f){pendingPhoto="";return}
+  try{
+    pendingPhoto=await compressPhoto(f);
+    const p=document.getElementById("photoPreview");
+    p.src=pendingPhoto;p.classList.remove("hidden");
+  }catch(err){alert("That photo could not be loaded.")}
+});
+function saveItem(){
+  const name=document.getElementById("itemName").value.trim();
+  const location=document.getElementById("room").value.trim();
+  const spot=document.getElementById("spot").value.trim();
+  const notes=document.getElementById("notes").value.trim();
+  if(!name){alert("Enter the item name.");return}
+  if(!location){alert("Enter where you put it.");return}
+  const items=getItems();
+  items.push({
+    id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),
+    name,location,spot,notes,photo:pendingPhoto,updated:Date.now()
+  });
+  try{setItems(items)}
+  catch(e){
+    alert("This browser is running out of storage. Try saving fewer or smaller photos.");
+    return;
+  }
+  document.getElementById("itemName").value="";
+  document.getElementById("room").value="";
+  document.getElementById("spot").value="";
+  document.getElementById("notes").value="";
+  document.getElementById("itemPhoto").value="";
+  document.getElementById("photoPreview").classList.add("hidden");
+  pendingPhoto="";
+  const m=document.getElementById("saveMessage");
+  m.classList.remove("hidden");
+  setTimeout(()=>m.classList.add("hidden"),1800);
+}
+document.getElementById("homeSearch").addEventListener("keydown",e=>{if(e.key==="Enter")findFromHome()});
+document.getElementById("findSearch").addEventListener("input",renderResults);
+updateCount();
 </script>
 </body>
 </html>
