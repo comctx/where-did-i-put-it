@@ -4,94 +4,371 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#2563eb">
-<title>Where Did I Put It?</title>
+<title>Where Did I Put It? · DONCO-BAYCITY™</title>
 <style>
 :root{
-  --bg:#f4f7fb;--card:#fff;--text:#172033;--muted:#667085;--accent:#2563eb;
-  --accent2:#eef4ff;--border:#dbe2ea;--danger:#b42318;--shadow:0 8px 24px rgba(15,23,42,.08)
+  --bg:#f6f5f1;
+  --surface:#ffffff;
+  --surface-soft:#f1f3f5;
+  --text:#1f2933;
+  --muted:#66717d;
+  --line:#dfe3e7;
+  --accent:#184f7d;
+  --accent-dark:#123c60;
+  --accent-soft:#eaf1f7;
+  --danger:#a13a32;
+  --danger-soft:#fff3f1;
+  --success:#236843;
+  --success-soft:#edf8f1;
+  --radius:14px;
+  --shadow:0 8px 28px rgba(31,41,51,.06);
 }
 *{box-sizing:border-box}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
-.app{max-width:520px;margin:auto;min-height:100vh;padding:calc(14px + env(safe-area-inset-top)) 16px calc(28px + env(safe-area-inset-bottom))}
-h1{font-size:30px;line-height:1.1;text-align:center;margin:10px 0 6px}
-.sub{text-align:center;color:var(--muted);margin:0 0 18px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:20px;box-shadow:var(--shadow);padding:16px;margin-bottom:14px}
-.hero{text-align:center;padding:20px 16px}
-.hero .emoji{font-size:48px}
-.search{display:flex;gap:8px}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  letter-spacing:.01em;
+}
+.app{
+  width:min(100%,520px);
+  margin:0 auto;
+  min-height:100vh;
+  padding:calc(24px + env(safe-area-inset-top)) 18px calc(34px + env(safe-area-inset-bottom));
+}
+.brandline{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:0 2px 26px;
+  color:#56616d;
+  font-size:11px;
+  font-weight:750;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+.brandmark{
+  width:28px;
+  height:28px;
+  border:1px solid #9ba5af;
+  border-radius:8px;
+  display:grid;
+  place-items:center;
+  color:var(--accent);
+  font-weight:900;
+  letter-spacing:0;
+  background:#fff;
+}
+h1{
+  margin:0;
+  font-size:34px;
+  line-height:1.08;
+  font-weight:760;
+  letter-spacing:-.035em;
+}
+.lead{
+  color:var(--muted);
+  font-size:16px;
+  line-height:1.55;
+  margin:10px 0 22px;
+}
+.card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:18px;
+  margin-bottom:14px;
+  box-shadow:var(--shadow);
+}
+.hero{
+  padding:0;
+  background:transparent;
+  border:none;
+  box-shadow:none;
+  margin-bottom:4px;
+}
+.hero .emoji{display:none}
+.sub{display:none}
+.search-shell{
+  background:#fff;
+  border:1px solid #cfd5db;
+  border-radius:12px;
+  padding:5px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  box-shadow:0 3px 14px rgba(31,41,51,.04);
+  margin:0 0 22px;
+}
+.search{display:flex;gap:8px;align-items:center}
+.search-shell .search{width:100%}
 .search input{flex:1;min-width:0}
 input,textarea,select{
-  width:100%;font:inherit;border:1px solid #cfd8e3;border-radius:12px;padding:12px;background:#fff;color:var(--text)
+  width:100%;
+  font:inherit;
+  color:var(--text);
+  background:#fff;
+  border:1px solid #cfd5db;
+  border-radius:10px;
+  padding:12px 13px;
+  outline:none;
+  transition:border-color .15s,box-shadow .15s;
 }
-textarea{min-height:82px;resize:vertical}
-label{display:block;font-weight:700;margin:13px 0 6px}
-button{font:inherit;cursor:pointer}
-.btn{width:100%;border:none;border-radius:14px;padding:14px;font-weight:800;font-size:17px;margin-top:10px}
+input:focus,textarea:focus,select:focus{
+  border-color:#6f94b3;
+  box-shadow:0 0 0 3px rgba(24,79,125,.10);
+}
+.search-shell input{
+  border:0;
+  box-shadow:none;
+  padding:11px 12px;
+  background:transparent;
+}
+.search-shell input:focus{box-shadow:none}
+textarea{min-height:92px;resize:vertical}
+label{
+  display:block;
+  font-size:13px;
+  font-weight:760;
+  color:#3b4651;
+  margin:16px 0 7px;
+}
+button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.btn{
+  width:100%;
+  border:1px solid transparent;
+  border-radius:10px;
+  padding:12px 14px;
+  font-weight:760;
+  font-size:15px;
+  margin-top:10px;
+}
 .primary{background:var(--accent);color:#fff}
-.secondary{background:var(--accent2);color:var(--accent)}
-.danger{background:#fff0ee;color:var(--danger);border:1px solid #ffd1cc}
-.homebtn{display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--border);border-radius:16px;padding:16px;margin:10px 0;box-shadow:var(--shadow);font-weight:800;font-size:19px}
-.homebtn small{display:block;color:var(--muted);font-weight:500;font-size:14px;margin-top:4px}
+.primary:hover{background:var(--accent-dark)}
+.secondary{background:#fff;color:var(--accent);border-color:#bfcbd5}
+.danger{background:var(--danger-soft);color:var(--danger);border-color:#efc8c3}
 .hidden{display:none!important}
-.topbar{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.back{border:none;background:var(--accent2);color:var(--accent);border-radius:10px;padding:9px 12px;font-weight:800}
-.topbar h2{margin:0;font-size:23px}
-.photoPreview{width:100%;max-height:260px;object-fit:cover;border-radius:14px;margin-top:10px;border:1px solid var(--border)}
-.item{background:#fff;border:1px solid var(--border);border-radius:16px;padding:13px;margin:10px 0}
-.itemrow{display:flex;gap:12px}
-.thumb{width:82px;height:82px;object-fit:cover;border-radius:12px;background:#eef2f7;flex:0 0 auto}
-.item h3{margin:1px 0 5px;font-size:19px}
-.loc{font-weight:800;color:#1d4ed8}
-.meta{color:var(--muted);font-size:13px;margin-top:5px}
-.empty{text-align:center;color:var(--muted);padding:24px 10px}
-.badge{display:inline-block;background:#eef4ff;color:#1d4ed8;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:800;margin-top:6px}
+.home-actions{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  overflow:hidden;
+  box-shadow:var(--shadow);
+  margin-bottom:14px;
+}
+.homebtn{
+  display:flex;
+  align-items:center;
+  width:100%;
+  text-align:left;
+  background:#fff;
+  border:0;
+  border-bottom:1px solid var(--line);
+  padding:15px 16px;
+  margin:0;
+  box-shadow:none;
+  font-weight:760;
+  font-size:16px;
+  color:var(--text);
+}
+.homebtn:last-child{border-bottom:0}
+.homebtn:hover{background:#fafbfc}
+.nav-icon{
+  width:34px;
+  height:34px;
+  border-radius:9px;
+  display:grid;
+  place-items:center;
+  flex:0 0 auto;
+  margin-right:13px;
+  background:var(--accent-soft);
+  color:var(--accent);
+  font-size:19px;
+  font-weight:850;
+}
+.homebtn-copy{min-width:0;flex:1}
+.homebtn small{
+  display:block;
+  color:var(--muted);
+  font-weight:500;
+  font-size:13px;
+  line-height:1.35;
+  margin-top:3px;
+}
+.chev{color:#9aa3ab;font-size:20px;margin-left:10px;font-weight:400}
+.topbar{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:18px;
+  padding-bottom:13px;
+  border-bottom:1px solid #d9dde1;
+}
+.back{
+  border:1px solid #cbd3da;
+  background:#fff;
+  color:#31404d;
+  border-radius:9px;
+  padding:8px 11px;
+  font-weight:740;
+}
+.search-shell .back{
+  background:var(--accent);
+  color:#fff;
+  border-color:var(--accent);
+  padding:10px 14px;
+}
+.topbar h2{margin:0;font-size:22px;letter-spacing:-.02em}
+.photoPreview{
+  width:100%;
+  max-height:280px;
+  object-fit:cover;
+  border-radius:11px;
+  margin-top:10px;
+  border:1px solid var(--line);
+}
+.item{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:15px;
+  margin:0 0 10px;
+  box-shadow:0 4px 18px rgba(31,41,51,.04);
+}
+.itemrow{display:flex;gap:13px}
+.thumb{
+  width:76px;
+  height:76px;
+  object-fit:cover;
+  border-radius:10px;
+  background:#eef1f3;
+  flex:0 0 auto;
+}
+.item h3{margin:0 0 6px;font-size:18px;letter-spacing:-.015em}
+.loc{font-weight:720;color:#31404d;line-height:1.4}
+.location-label{color:#7a858f;font-size:12px;font-weight:760;text-transform:uppercase;letter-spacing:.06em;margin-right:5px}
+.meta{color:var(--muted);font-size:13px;margin-top:7px;line-height:1.45}
+.empty{text-align:center;color:var(--muted);padding:28px 12px}
+.badge{
+  display:inline-block;
+  background:#f3f5f6;
+  color:#69737d;
+  padding:4px 7px;
+  border-radius:6px;
+  font-size:11px;
+  font-weight:720;
+  margin-top:8px;
+}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.msg{padding:11px;border-radius:12px;background:#ecfdf3;color:#067647;font-weight:700;margin-top:10px}
-.note{font-size:12px;color:var(--muted);margin-top:8px}
-.brand-footer{text-align:center;color:#475467;font-size:12px;font-weight:600;margin:12px 0 4px;letter-spacing:.4px}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
+.three .btn{font-size:13px;padding:9px 6px;margin-top:0}
+.msg{
+  padding:11px 12px;
+  border-radius:9px;
+  background:var(--success-soft);
+  border:1px solid #cce8d6;
+  color:var(--success);
+  font-weight:720;
+  margin-top:10px;
+}
+.note{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.45}
+.brand-footer{
+  text-align:center;
+  color:#727c85;
+  font-size:10px;
+  font-weight:760;
+  margin:13px 0 2px;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+}
 .utility{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-.status{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.4}
+.status{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.5}
+.summary-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  padding:9px 2px 0;
+  margin-bottom:0;
+}
+.summary-card strong{font-size:13px;color:#4e5a65}
+.summary-card .note{text-align:right;max-width:230px;margin:0}
+.section-kicker{
+  color:#7a858f;
+  font-size:11px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.11em;
+  margin:0 0 8px;
+}
+@media (max-width:380px){
+  h1{font-size:31px}
+  .three{grid-template-columns:1fr}
+  .three .btn{width:100%}
+}
 </style>
 </head>
 <body>
 <div class="app">
 
 <section id="homeView">
-  <div class="card hero">
-    <div class="emoji">📦</div>
-    <h1>Where Did I Put It?</h1>
-    <p class="sub">Save where you stored things so you can find them later.</p>
+  <div class="brandline">
+    <span>DONCO-BAYCITY™</span>
+    <span class="brandmark">D</span>
   </div>
 
-  <div class="card">
+  <div class="hero">
+    <p class="section-kicker">Personal item locator</p>
+    <h1>Where Did I Put It?</h1>
+    <p class="lead">Keep a simple record of where things are stored, then find them when you need them.</p>
+  </div>
+
+  <div class="search-shell">
     <div class="search">
-      <input id="homeSearch" type="search" placeholder="What are you looking for?">
+      <input id="homeSearch" type="search" placeholder="Search your saved items" aria-label="Search saved items">
       <button class="back" onclick="findFromHome()">Find</button>
     </div>
   </div>
 
-  <button class="homebtn" onclick="showView('addView')">➕ Add Item
-    <small>Take a photo and save where you put it.</small>
-  </button>
-  <button class="homebtn" onclick="showFind()">🔎 Find Item
-    <small>Search your saved items and locations.</small>
-  </button>
-  <button class="homebtn" onclick="showAllItems()">📋 All Items
-    <small>See everything you have saved in one list.</small>
-  </button>
-  <button class="homebtn" onclick="showMove()">📍 I Moved It
-    <small>Update an item's location quickly.</small>
-  </button>
-  <button class="homebtn" onclick="showBackup()">💾 Backup / Restore
-    <small>Save a backup file or restore your items later.</small>
-  </button>
-
-  <div class="card" style="text-align:center">
-    <strong id="itemCount">0 items saved</strong>
-    <div class="note">Items are stored on this device in this browser.</div>
-    <div class="brand-footer" style="margin-top:12px">A DONCO-BAYCITY™ App</div>
+  <div class="home-actions">
+    <button class="homebtn" onclick="showView('addView')">
+      <span class="nav-icon">+</span>
+      <span class="homebtn-copy">Add Item<small>Save an item, its location, and an optional photo.</small></span>
+      <span class="chev">›</span>
+    </button>
+    <button class="homebtn" onclick="showFind()">
+      <span class="nav-icon">⌕</span>
+      <span class="homebtn-copy">Find Item<small>Search names, locations, spots, and notes.</small></span>
+      <span class="chev">›</span>
+    </button>
+    <button class="homebtn" onclick="showAllItems()">
+      <span class="nav-icon">≡</span>
+      <span class="homebtn-copy">All Items<small>Browse everything you have saved.</small></span>
+      <span class="chev">›</span>
+    </button>
+    <button class="homebtn" onclick="showMove()">
+      <span class="nav-icon">↗</span>
+      <span class="homebtn-copy">I Moved It<small>Update an item's location without re-entering it.</small></span>
+      <span class="chev">›</span>
+    </button>
+    <button class="homebtn" onclick="showBackup()">
+      <span class="nav-icon">⇅</span>
+      <span class="homebtn-copy">Backup &amp; Restore<small>Protect your saved items with a backup file.</small></span>
+      <span class="chev">›</span>
+    </button>
   </div>
+
+  <div class="summary-card">
+    <strong id="itemCount">0 items saved</strong>
+    <div class="note">Stored privately in this browser.</div>
+  </div>
+  <div class="brand-footer">A DONCO-BAYCITY™ App</div>
 </section>
 
 <section id="addView" class="hidden">
@@ -135,7 +412,7 @@ button{font:inherit;cursor:pointer}
 </section>
 
 <section id="backupView" class="hidden">
-  <div class="topbar"><button class="back" onclick="goHome()">← Back</button><h2>Backup / Restore</h2></div>
+  <div class="topbar"><button class="back" onclick="goHome()">← Back</button><h2>Backup &amp; Restore</h2></div>
   <div class="card">
     <h3 style="margin-top:0">Backup your saved items</h3>
     <p class="status">Download a backup file that includes your item names, locations, notes, and saved photos.</p>
@@ -254,10 +531,10 @@ function itemCardHtml(i){
   return `
     <div class="item">
       <div class="itemrow">
-        ${i.photo?`<img class="thumb" src="${i.photo}" alt="">`:`<div class="thumb" style="display:grid;place-items:center;font-size:34px">📦</div>`}
+        ${i.photo?`<img class="thumb" src="${i.photo}" alt="">`:`<div class="thumb" style="display:grid;place-items:center;font-size:16px;font-weight:800;color:#7a858f">ITEM</div>`}
         <div style="min-width:0;flex:1">
           <h3>${escapeHtml(i.name)}</h3>
-          <div class="loc">📍 ${escapeHtml(i.location)}${i.spot?" — "+escapeHtml(i.spot):""}</div>
+          <div class="loc"><span class="location-label">Location</span>${escapeHtml(i.location)}${i.spot?" — "+escapeHtml(i.spot):""}</div>
           ${i.notes?`<div class="meta">${escapeHtml(i.notes)}</div>`:""}
           <span class="badge">Saved ${new Date(i.updated).toLocaleDateString()}</span>
         </div>
