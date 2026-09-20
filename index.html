@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,6 +46,7 @@ button{font:inherit;cursor:pointer}
 .empty{text-align:center;color:var(--muted);padding:24px 10px}
 .badge{display:inline-block;background:#eef4ff;color:#1d4ed8;padding:4px 8px;border-radius:999px;font-size:12px;font-weight:800;margin-top:6px}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .msg{padding:11px;border-radius:12px;background:#ecfdf3;color:#067647;font-weight:700;margin-top:10px}
 .note{font-size:12px;color:var(--muted);margin-top:8px}
 </style>
@@ -136,11 +136,40 @@ button{font:inherit;cursor:pointer}
   </div>
 </section>
 
+<section id="editView" class="hidden">
+  <div class="topbar"><button class="back" onclick="showFind()">← Back</button><h2>Edit Item</h2></div>
+  <div class="card">
+    <input id="editId" type="hidden">
+
+    <label for="editName">Item name</label>
+    <input id="editName" placeholder="Example: Christmas lights">
+
+    <label for="editPhoto">Photo (optional)</label>
+    <input id="editPhoto" type="file" accept="image/*" capture="environment">
+    <img id="editPhotoPreview" class="photoPreview hidden" alt="Current item photo">
+    <button id="removePhotoBtn" class="btn danger hidden" type="button" onclick="removeEditPhoto()">Remove Current Photo</button>
+
+    <label for="editRoom">Location</label>
+    <input id="editRoom" placeholder="Example: Garage">
+
+    <label for="editSpot">Exact spot</label>
+    <input id="editSpot" placeholder="Example: Top shelf, left side">
+
+    <label for="editNotes">Notes (optional)</label>
+    <textarea id="editNotes" placeholder="Box color, quantity, part number, etc."></textarea>
+
+    <button class="btn primary" onclick="saveEdit()">Save Changes</button>
+    <div id="editMessage" class="msg hidden">Changes saved!</div>
+  </div>
+</section>
+
 </div>
 
 <script>
 const KEY="whereDidIPutIt_items_v1";
 let pendingPhoto="";
+let pendingEditPhoto="";
+let removeExistingPhoto=false;
 
 function getItems(){
   try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){return[]}
@@ -154,7 +183,7 @@ function updateCount(){
   document.getElementById("itemCount").textContent=n+" item"+(n===1?"":"s")+" saved";
 }
 function showView(id){
-  ["homeView","addView","findView","moveView"].forEach(v=>document.getElementById(v).classList.add("hidden"));
+  ["homeView","addView","findView","moveView","editView"].forEach(v=>document.getElementById(v).classList.add("hidden"));
   document.getElementById(id).classList.remove("hidden");
   window.scrollTo(0,0);
 }
@@ -211,11 +240,72 @@ function renderResults(){
           <span class="badge">Saved ${new Date(i.updated).toLocaleDateString()}</span>
         </div>
       </div>
-      <div class="two">
+      <div class="three">
+        <button class="btn secondary" onclick="editItem('${i.id}')">Edit</button>
         <button class="btn secondary" onclick="quickMove('${i.id}')">I Moved It</button>
         <button class="btn danger" onclick="deleteItem('${i.id}')">Delete</button>
       </div>
     </div>`).join("");
+}
+function editItem(id){
+  const item=getItems().find(i=>i.id===id);
+  if(!item)return;
+  document.getElementById("editId").value=item.id;
+  document.getElementById("editName").value=item.name||"";
+  document.getElementById("editRoom").value=item.location||"";
+  document.getElementById("editSpot").value=item.spot||"";
+  document.getElementById("editNotes").value=item.notes||"";
+  document.getElementById("editPhoto").value="";
+  pendingEditPhoto="";
+  removeExistingPhoto=false;
+  const p=document.getElementById("editPhotoPreview");
+  const r=document.getElementById("removePhotoBtn");
+  if(item.photo){
+    p.src=item.photo;
+    p.classList.remove("hidden");
+    r.classList.remove("hidden");
+  }else{
+    p.removeAttribute("src");
+    p.classList.add("hidden");
+    r.classList.add("hidden");
+  }
+  showView("editView");
+}
+function removeEditPhoto(){
+  removeExistingPhoto=true;
+  pendingEditPhoto="";
+  document.getElementById("editPhoto").value="";
+  const p=document.getElementById("editPhotoPreview");
+  p.removeAttribute("src");
+  p.classList.add("hidden");
+  document.getElementById("removePhotoBtn").classList.add("hidden");
+}
+function saveEdit(){
+  const id=document.getElementById("editId").value;
+  const name=document.getElementById("editName").value.trim();
+  const location=document.getElementById("editRoom").value.trim();
+  const spot=document.getElementById("editSpot").value.trim();
+  const notes=document.getElementById("editNotes").value.trim();
+  if(!name){alert("Enter the item name.");return}
+  if(!location){alert("Enter where you put it.");return}
+  const items=getItems();
+  const item=items.find(i=>i.id===id);
+  if(!item)return;
+  item.name=name;
+  item.location=location;
+  item.spot=spot;
+  item.notes=notes;
+  if(pendingEditPhoto)item.photo=pendingEditPhoto;
+  else if(removeExistingPhoto)item.photo="";
+  item.updated=Date.now();
+  try{setItems(items)}
+  catch(e){
+    alert("This browser is running out of storage. Try saving fewer or smaller photos.");
+    return;
+  }
+  const m=document.getElementById("editMessage");
+  m.classList.remove("hidden");
+  setTimeout(()=>{m.classList.add("hidden");showFind()},700);
 }
 function quickMove(id){
   showMove();
@@ -274,6 +364,17 @@ document.getElementById("itemPhoto").addEventListener("change",async e=>{
     pendingPhoto=await compressPhoto(f);
     const p=document.getElementById("photoPreview");
     p.src=pendingPhoto;p.classList.remove("hidden");
+  }catch(err){alert("That photo could not be loaded.")}
+});
+document.getElementById("editPhoto").addEventListener("change",async e=>{
+  const f=e.target.files[0];
+  if(!f){pendingEditPhoto="";return}
+  try{
+    pendingEditPhoto=await compressPhoto(f);
+    removeExistingPhoto=false;
+    const p=document.getElementById("editPhotoPreview");
+    p.src=pendingEditPhoto;p.classList.remove("hidden");
+    document.getElementById("removePhotoBtn").classList.remove("hidden");
   }catch(err){alert("That photo could not be loaded.")}
 });
 function saveItem(){
