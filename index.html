@@ -41,7 +41,7 @@ body{
 .brandline{
   display:flex;
   align-items:center;
-  justify-content:space-between;
+  justify-content:flex-end;
   gap:12px;
   margin:0 2px 26px;
   color:#56616d;
@@ -50,17 +50,11 @@ body{
   letter-spacing:.12em;
   text-transform:uppercase;
 }
-.brandmark{
-  width:28px;
-  height:28px;
-  border:1px solid #9ba5af;
-  border-radius:8px;
-  display:grid;
-  place-items:center;
-  color:var(--accent);
-  font-weight:900;
-  letter-spacing:0;
-  background:#fff;
+.brand-logo{
+  width:42px;
+  height:42px;
+  object-fit:contain;
+  display:block;
 }
 h1{
   margin:0;
@@ -319,8 +313,7 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 
 <section id="homeView">
   <div class="brandline">
-    <span>DONCO-BAYCITY™</span>
-    <span class="brandmark">D</span>
+    <img src="donco_logo_footer.png" alt="DONCO-BAYCITY logo" class="brand-logo">
   </div>
 
   <div class="hero">
@@ -368,7 +361,6 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
     <strong id="itemCount">0 items saved</strong>
     <div class="note">Stored privately in this browser.</div>
   </div>
-  <div class="brand-footer">A DONCO-BAYCITY™ App</div>
 </section>
 
 <section id="addView" class="hidden">
