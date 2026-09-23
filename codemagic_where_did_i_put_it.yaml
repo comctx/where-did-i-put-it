@@ -1,0 +1,73 @@
+workflows:
+  where-did-i-put-it-testflight:
+    name: Where Did I Put It TestFlight
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+
+    integrations:
+      app_store_connect: Codemagic
+
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.donaldreckman.wheredidiputit
+      node: 22
+      xcode: latest
+      cocoapods: default
+      vars:
+        BUNDLE_ID: "com.donaldreckman.wheredidiputit"
+        APP_NAME: "Where Did I Put It?"
+
+    scripts:
+      - name: Create iOS project
+        script: |
+          set -eu
+
+          npm init -y
+          npm install @capacitor/core@latest @capacitor/cli@latest @capacitor/ios@latest
+
+          rm -rf www ios
+          mkdir -p www
+          cp index.html www/index.html
+
+          cat > capacitor.config.json <<'EOF'
+          {
+            "appId": "com.donaldreckman.wheredidiputit",
+            "appName": "Where Did I Put It?",
+            "webDir": "www"
+          }
+          EOF
+
+          npx cap add ios
+          npx cap sync ios
+
+          PLIST="ios/App/App/Info.plist"
+
+          /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string Where Did I Put It? uses the camera when you choose to photograph an item." "$PLIST" ||           /usr/libexec/PlistBuddy -c "Set :NSCameraUsageDescription Where Did I Put It? uses the camera when you choose to photograph an item." "$PLIST"
+
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string Where Did I Put It? lets you choose a photo to help identify a saved item." "$PLIST" ||           /usr/libexec/PlistBuddy -c "Set :NSPhotoLibraryUsageDescription Where Did I Put It? lets you choose a photo to help identify a saved item." "$PLIST"
+
+          /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" "$PLIST" ||           /usr/libexec/PlistBuddy -c "Set :ITSAppUsesNonExemptEncryption false" "$PLIST"
+
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${PROJECT_BUILD_NUMBER}" "$PLIST"
+
+      - name: Apply Apple signing
+        script: |
+          set -eu
+          cd "$CM_BUILD_DIR/ios/App"
+          xcode-project use-profiles
+
+      - name: Build signed app
+        script: |
+          set -eu
+          cd "$CM_BUILD_DIR/ios/App"
+          xcode-project build-ipa --project "App.xcodeproj" --scheme "App"
+
+    artifacts:
+      - ios/App/build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
